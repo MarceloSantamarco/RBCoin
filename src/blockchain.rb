@@ -11,12 +11,14 @@ class BlockChain
     end
 
     def create_genesis_block
-        block = Block.new(Time.now, {}, "0000", 0)
+        block = Block.new(Time.now, {}, "0000", 0, 1)
+        block.mine
         @chain << block
     end
 
     def new_block(data)
-        block = Block.new(Time.now, data, @chain.last.hash, @chain.last.index)
+        block = Block.new(Time.now, data, @chain.last.hash, @chain.last.index, [3, 4, 5].sample)
+        block.mine
         @chain << block
     end
 

@@ -14,8 +14,4 @@ users.each_with_index do |user, i|
     b.new_transaction(user, i+1, users.sample)
 end
 
-b.chain.each do |block|
-    block.mine
-end
-
 puts b.chain.inspect
