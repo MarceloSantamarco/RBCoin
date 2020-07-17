@@ -2,13 +2,18 @@ require 'openssl'
 require 'json'
 
 class Transaction
-    attr_accessor :sender, :amount, :receiver
+    attr_accessor :sender, :amount, :receiver, :id
 
     def initialize(sender, amount, receiver)
+        @id = nil,
         @sender = sender
         @amount = amount
         @receiver = receiver
         @signature = generate_signature()
+    end
+
+    def create_id(tx_id)
+        @id = tx_id
     end
 
     def check_signature

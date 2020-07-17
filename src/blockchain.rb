@@ -25,7 +25,11 @@ class BlockChain
 
     def new_transaction(sender, amount, receiver)
         transaction = Transaction.new(sender, amount, receiver)
-        @pool << transaction if transaction.check_signature()
+        if transaction.check_signature()
+            tx_id = @pool.last.nil? ? 1 : @pool.last.id+1
+            transaction.create_id(tx_id)
+            @pool << transaction
+        end
     end
 
 end
