@@ -1,19 +1,25 @@
 require_relative './src/blockchain'
 require_relative './src/address'
-require 'securerandom'
+require 'json'
 
 users = []
 2.times do
-    users << {
-        address: Address.new()
-    }
+    users << Address.new()
 end
 
-b = BlockChain.new()
+blockchain = BlockChain.new()
+blockchain.mine(blockchain.genesis, users[1])
 
-b.new_transaction(users[0], 10, users[1])
-b.new_transaction(users[1], 5, users[0])
+blockchain.new_transaction(users[1], 10, users[0])
 
-b.new_block(b.pool)
+block = blockchain.new_block()
 
-puts b.chain.last.inspect
+blockchain.mine(block, users[1])
+
+blockchain.new_transaction(users[1], 40, users[0])
+
+block = blockchain.new_block()
+
+blockchain.mine(block, users[0])
+
+puts("\n#{blockchain.chain.last.inspect.to_json}\n")

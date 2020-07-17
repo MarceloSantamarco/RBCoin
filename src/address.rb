@@ -1,4 +1,5 @@
 require 'openssl'
+require 'securerandom'
 
 class Address
     attr_accessor :public_key
