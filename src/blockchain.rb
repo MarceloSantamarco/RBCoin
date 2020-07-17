@@ -25,7 +25,7 @@ class BlockChain
 
     def new_transaction(sender, amount, receiver)
         transaction = Transaction.new(sender, amount, receiver)
-        @pool << transaction
+        @pool << transaction if transaction.check_signature()
     end
 
 end

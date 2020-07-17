@@ -1,18 +1,18 @@
 require_relative './src/blockchain'
+require_relative './src/address'
 require 'securerandom'
 
 users = []
-15.times do
+2.times do
     users << {
-        address: SecureRandom.hex(10)
+        address: Address.new()
     }
 end
 
 b = BlockChain.new()
 
-users.each_with_index do |user, i| 
-    b.new_transaction(user, i+1, users.sample)
-end
+b.new_transaction(users[0], 10, users[1])
+b.new_transaction(users[1], 5, users[0])
 
 b.new_block(b.pool)
 
