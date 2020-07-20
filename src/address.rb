@@ -2,10 +2,11 @@ require 'openssl'
 require 'securerandom'
 
 class Address
-    attr_accessor :public_key
+    attr_accessor :public_key, :balance
 
     def initialize
         @public_key = generate_keys()
+        @balance = 0
     end
 
     private

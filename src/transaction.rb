@@ -5,6 +5,10 @@ class Transaction
     attr_accessor :sender, :amount, :receiver, :id
 
     def initialize(sender, amount, receiver)
+        if sender.class != String && amount > sender.balance
+            puts "ValueError - insufficient funds"
+            return nil
+        end
         @id = nil,
         @sender = sender
         @amount = amount

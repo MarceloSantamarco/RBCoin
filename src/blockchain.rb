@@ -30,7 +30,7 @@ class BlockChain
                 block.hash = hash
                 @chain << block
                 @pool = []
-                new_transaction("coinbase#{block.id}", 100, address)
+                new_transaction("coinbase##{block.id}", 100, address)
                 break
             else
                 block.nonce+=1
@@ -42,10 +42,15 @@ class BlockChain
 
     def new_transaction(sender, amount, receiver)
         transaction = Transaction.new(sender, amount, receiver)
+
+        return if transaction.sender.nil?
+
         if transaction.check_signature()
             tx_id = @pool.last.nil? ? 1 : @pool.last.id+1
             transaction.create_id(tx_id)
             @pool << transaction
+            sender.balance-=amount if sender.class != String
+            receiver.balance+=amount
         end
     end
 
