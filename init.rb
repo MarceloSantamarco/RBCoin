@@ -39,4 +39,8 @@ blockchain.mine(block, users[0])
 puts users[1].balance
 puts users[0].balance
 
-puts "\n#{blockchain.chain.last.inspect.to_json}\n"
+blockchain.new_transaction(users[0], 10, users[1])
+puts users[1].balance
+puts users[0].balance
+
+puts "\n#{blockchain.chain.sample.inspect}\n"

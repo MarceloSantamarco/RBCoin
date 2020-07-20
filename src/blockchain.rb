@@ -46,8 +46,7 @@ class BlockChain
         return if transaction.sender.nil?
 
         if transaction.check_signature()
-            tx_id = @pool.last.nil? ? 1 : @pool.last.id+1
-            transaction.create_id(tx_id)
+            transaction.create_id(self)
             @pool << transaction
             sender.balance-=amount if sender.class != String
             receiver.balance+=amount

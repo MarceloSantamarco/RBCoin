@@ -16,7 +16,10 @@ class Transaction
         @signature = generate_signature()
     end
 
-    def create_id(tx_id)
+    def create_id(blockchain)
+        txs_previous_block = blockchain.chain.last.data
+        txs_current_pool = blockchain.pool
+        tx_id = txs_current_pool.empty? ? (txs_previous_block.empty? ? 1 : txs_previous_block.last.id+1) : txs_current_pool.last.id+1
         @id = tx_id
     end
 
