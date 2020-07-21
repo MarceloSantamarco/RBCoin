@@ -48,8 +48,8 @@ class BlockChain
         if transaction.check_signature()
             transaction.create_id(self)
             @pool << transaction
-            sender.balance-=amount if sender.class != String
-            receiver.balance+=amount
+            sender['balance']-=amount if sender.class != String
+            receiver['balance']+=amount
         end
     end
 

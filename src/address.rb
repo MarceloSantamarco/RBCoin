@@ -16,7 +16,7 @@ class Address
 
         generate_private_key(password)
         
-        OpenSSL::PKey::RSA.new(File.read('private_key.pem'), password)
+        OpenSSL::PKey::RSA.new(File.read('private_key.pem'), password).public_key
     end
 
     def generate_private_key(password)

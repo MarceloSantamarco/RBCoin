@@ -2,7 +2,7 @@ require 'openssl'
 require 'json'
 
 class Transaction
-    attr_accessor :sender, :amount, :receiver, :id
+    attr_accessor :sender, :amount, :receiver, :id, :signature
 
     def initialize(sender, amount, receiver)
         if sender.class != String && amount > sender.balance
