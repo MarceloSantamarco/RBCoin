@@ -5,7 +5,7 @@ class Transaction
     attr_accessor :sender, :amount, :receiver, :id, :signature
 
     def initialize(sender, amount, receiver)
-        if sender.class != String && amount > sender.balance
+        if !sender.is_a?(String) && amount.to_i > sender['balance'].to_i
             puts "ValueError - insufficient funds"
             return nil
         end

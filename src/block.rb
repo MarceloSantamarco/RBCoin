@@ -3,7 +3,7 @@ require 'json'
 
 class Block
 
-    attr_accessor :id, :difficulty, :nonce, :data, :hash
+    attr_accessor :id, :difficulty, :nonce, :data, :created_at, :previous_hash, :hash
 
     def initialize(created_at, data, previous_hash, previous_id, difficulty)
         @id = previous_id+1

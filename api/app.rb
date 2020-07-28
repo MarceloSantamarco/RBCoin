@@ -7,23 +7,43 @@ require_relative '../src/blockchain'
 require_relative '../src/address'
 
 blockchain = BlockChain.new
-blocks = []
+current_block ||= blockchain.genesis
+
+File.open('secret_key.txt', 'w') do |f|
+  f.write(SecureRandom.hex(60))
+end
+
+def serialize_block(block)
+  hash = {
+    id: block,
+    difficulty: block.difficulty,
+    nonce: block.nonce,
+    created_at: block.created_at,
+    data: block.data,
+    previous_hash: block.previous_hash,
+    hash: block.hash
+  }
+  hash
+end
 
 get '/' do
   blockchain.inspect.to_json
 end
 
+get '/block/available' do
+  hash = serialize_block(current_block)
+  hash.to_json
+end
+
 post '/blockchain/mine' do
-  params = JSON.parse(request.body.read)
-  user = JWT.decode(params["address"], File.read('password.txt'), true, algorithm: 'HS256')[0]
-  block = if params["block_id"] == "1"
-            blockchain.genesis
-          else
-            blocks.filter{|block| block.id == params["block_id"]}
-          end
+  params = {
+    address: request['address'],
+  }
+  user = JWT.decode(params[:address], File.read('secret_key.txt'), true, algorithm: 'HS256')[0]
+  block = current_block
+
   blockchain.mine(block, user)
-  blocks << block
-  block.inspect.to_json
+  serialize_block(blockchain.chain.last).to_json
 end
 
 post '/address/new' do
@@ -33,7 +53,7 @@ post '/address/new' do
     balance: user.balance
   }
   address = {
-    address: JWT.encode(hash, File.read('password.txt'))
+    address: JWT.encode(hash, File.read('secret_key.txt'))
   }
   address.to_json
 end
@@ -45,9 +65,9 @@ get '/transaction' do
   txs.flatten.each do |tx|
     hash[:transaction] << {
       id: tx.id,
-      sender: tx.sender.is_a?(String) ? tx.sender : tx.sender.public_key,
+      sender: tx.sender.is_a?(String) ? tx.sender : JWT.encode(tx.sender, File.read('secret_key.txt')),
       amount: tx.amount,
-      receiver: tx.receiver,
+      receiver: JWT.encode(tx.receiver, File.read('secret_key.txt')),
       signature: tx.signature.nil? ? nil : tx.signature
     }
   end
@@ -55,9 +75,14 @@ get '/transaction' do
 end
 
 post '/transaction/new' do
-  params = JSON.parse(request.body.read)
-  sender = JWT.decode(params["sender"], File.read('1password.txt'), true, algorithm: 'HS256')[0]
-  receiver = JWT.decode(params["receiver"], File.read('2password.txt'), true, algorithm: 'HS256')[0]
-  amount = params["amount"]
+  params = {
+    sender: request['sender'],
+    amount: request['amount'],
+    receiver: request['receiver']
+  }
+  sender = JWT.decode(params[:sender], File.read('secret_key.txt'), true, algorithm: 'HS256')[0]
+  receiver = JWT.decode(params[:receiver], File.read('secret_key.txt'), true, algorithm: 'HS256')[0]
+  amount = params[:amount]
   blockchain.new_transaction(sender, amount, receiver)
+  current_block = blockchain.new_block() if blockchain.pool.map(&:amount).sum > 650
 end
