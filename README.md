@@ -1,5 +1,9 @@
 # BlockChain
 ----
-To seen an example:
+#### To see an example:
 
-```$ ruby ./init.rb```
+Start the server:
+```$ ruby ./api/app.rb```
+
+Run the example script
+```$ ruby ./init_api.rb```

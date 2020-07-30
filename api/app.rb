@@ -7,7 +7,7 @@ require_relative '../src/blockchain'
 require_relative '../src/address'
 
 blockchain = BlockChain.new
-current_block ||= blockchain.genesis
+current_block = blockchain.genesis
 
 File.open('secret_key.txt', 'w') do |f|
   f.write(SecureRandom.hex(60))
@@ -36,6 +36,7 @@ get '/block/available' do
 end
 
 post '/blockchain/mine' do
+  return if current_block.nil?
   params = {
     address: request['address'],
   }
@@ -43,6 +44,7 @@ post '/blockchain/mine' do
   block = current_block
 
   blockchain.mine(block, user)
+  current_block = nil
   serialize_block(blockchain.chain.last).to_json
 end
 

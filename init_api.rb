@@ -26,6 +26,22 @@ payload = {
 }
 RestClient.post("#{base_url}/blockchain/mine", payload, {})
 
+# New transaction from user2 to user1 (now user2 have 100 coins)
+payload = {
+    sender: users[1],
+    amount: 40,
+    receiver: users[0]
+}
+RestClient.post("#{base_url}/transaction/new", payload, {})
+
+# New transaction from user1 to user2 (user2 has 40 coins but doesn't have the correct password and key files )
+payload = {
+    sender: users[0],
+    amount: 20,
+    receiver: users[1]
+}
+RestClient.post("#{base_url}/transaction/new", payload, {})
+
 # Find all transactions (verifyed or not)
 transactions = JSON.parse(RestClient.get("#{base_url}/transaction", {}).body)
 puts transactions
