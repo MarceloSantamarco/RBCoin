@@ -31,25 +31,27 @@ class BlockChain
                 @chain << block
                 @pool = []
                 new_transaction("coinbase##{block.id}", 100, address)
+                puts "Bloco #{block.id}, com dificuldade #{block.difficulty} foi minerado com nonce #{block.nonce} e hash #{block.hash}"
                 break
             else
                 block.nonce+=1
                 next
             end
         end
-        puts "Bloco #{block.id}, com dificuldade #{block.difficulty} foi minerado com nonce #{block.nonce} e hash #{block.hash}"
+        true
     end
 
     def new_transaction(sender, amount, receiver)
         transaction = Transaction.new(sender, amount, receiver)
 
-        return if transaction.sender.nil?
+        return false if transaction.sender.nil?
 
         if transaction.check_signature()
             transaction.create_id(self)
             @pool << transaction
-            sender['balance']-=amount if sender.class != String
-            receiver['balance']+=amount
+            return true
+        else
+            return false
         end
     end
 

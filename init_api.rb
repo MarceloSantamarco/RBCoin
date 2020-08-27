@@ -6,7 +6,7 @@ base_url = 'http://localhost:4567'
 # Two new addresses
 users = []
 2.times do 
-    users << JSON.parse(RestClient.post("#{base_url}/address/new", {}, {}).body)['address']
+    users << JSON.parse(RestClient.post("#{base_url}/address/new", {}, {}).body)
 end
 
 # New transaction from user1 to user2 (both with no balance)
@@ -34,7 +34,7 @@ payload = {
 }
 RestClient.post("#{base_url}/transaction/new", payload, {})
 
-# New transaction from user1 to user2 (user2 has 40 coins but doesn't have the correct password and key files )
+# New transaction from user1 to user2 (user1 has 40 coins but doesn't have the correct password and key files )
 payload = {
     sender: users[0],
     amount: 20,
