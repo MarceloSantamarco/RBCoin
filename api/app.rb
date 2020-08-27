@@ -6,6 +6,9 @@ require 'pry'
 require_relative '../src/blockchain'
 require_relative '../src/address'
 
+require_relative './application_helper'
+include ApplicationHelper
+
 blockchain = BlockChain.new
 current_block = blockchain.genesis
 $adresses = []
@@ -14,34 +17,11 @@ File.open('secret_key.txt', 'w') do |f|
   f.write(SecureRandom.hex(60))
 end
 
-def serialize_block(block)
-  hash = {
-    id: block.id,
-    difficulty: block.difficulty,
-    nonce: block.nonce,
-    created_at: block.created_at,
-    data: block.data,
-    previous_hash: block.previous_hash,
-    hash: block.hash
-  }
-  hash
-end
-
-def decode(encoded_address)
-  address = JWT.decode(encoded_address, File.read('secret_key.txt'), true, algorithm: 'HS256')[0]
-  address
-end
-
 def update_address(address, amount)
   index = $adresses.index{|h| h[:id] == address['id'].to_i}
   address = decode($adresses[index][:address])
   address['balance'] += amount.to_i
   $adresses[index][:address] = JWT.encode(address, File.read('secret_key.txt'))
-end
-
-def get_address(address)
-  index = $adresses.index{|h| h[:id] == address['id'].to_i}
-  $adresses[index][:address]
 end
 
 get '/' do
@@ -55,7 +35,7 @@ end
 
 post '/blockchain/mine' do
   return if current_block.nil?
-  user = decode(get_address(request['address']))
+  user = decode(get_address(request['address'], $adresses))
   block = current_block
 
   if blockchain.mine(block, user)
@@ -99,9 +79,9 @@ end
 
 post '/transaction/new' do
   params = {
-    sender: get_address(request['sender']),
+    sender: get_address(request['sender'], $adresses),
     amount: request['amount'],
-    receiver: get_address(request['receiver'])
+    receiver: get_address(request['receiver'], $adresses)
   }
   sender = decode(params[:sender])
   receiver = decode(params[:receiver])
